@@ -1,5 +1,33 @@
 # Podcaster Crew
 
+## Project Overview
+
+Podcaster Crew is a Python-based multi-agent AI application built with CrewAI that automates the research-to-podcast workflow. It uses specialized agents to gather information on a topic, turn that research into a well-structured markdown report, and generate a natural two-host podcast script. The project then uses Gemini Text-to-Speech to convert the final script into an audio file saved in the outputs folder.
+
+This project is designed to help automate content creation for topics like AI trends, industry updates, research summaries, and podcast-ready storytelling with minimal manual effort.
+
+## Capabilities
+
+- Research any topic using an AI researcher agent
+- Collect recent developments, articles, and important findings
+- Organize findings into a detailed markdown report
+- Convert the report into an engaging podcast script with two hosts
+- Add natural dialogue, humor, pauses, and sound-effect style narration
+- Generate podcast audio using Gemini voice synthesis
+- Save generated outputs in the `outputs/` directory
+- Customize agents, tasks, and topic inputs for different use cases
+- Run locally with Python and CrewAI in a simple, repeatable workflow
+
+## Why This Project?
+
+Podcaster Crew demonstrates how multiple AI agents can collaborate in a real workflow:
+1. Researcher gathers facts and trends
+2. Reporting Analyst structures the findings
+3. Scriptwriter turns the analysis into a podcast outline and dialogue
+4. Voice generation creates final audio output
+
+This makes it a practical example of agent-based automation for content generation, research workflows, and voice-based storytelling.
+
 A Python project built with CrewAI that creates a podcast-style research workflow using multiple AI agents. The crew performs the following steps:
 
 - Researches a topic using a research agent
