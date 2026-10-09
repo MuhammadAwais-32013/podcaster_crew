@@ -1,60 +1,249 @@
 # Podcaster Crew
 
-Welcome to the Podcaster Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+A Python project built with CrewAI that creates a podcast-style research workflow using multiple AI agents. The crew performs the following steps:
 
-## Installation
+- Researches a topic using a research agent
+- Converts the findings into a structured markdown report
+- Writes a podcast script with two hosts
+- Generates a voice-based audio file in the `outputs/` folder using Gemini TTS
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
+This project is designed to be a practical example of a multi-agent workflow where each agent has a specific responsibility and the final output is a generated podcast script and audio.
 
-First, if you haven't already, install uv:
+## Project Overview
+
+The project contains three main agents:
+
+- `researcher`: Finds recent developments and relevant information about a topic
+- `reporting_analyst`: Organizes the research into a detailed report
+- `scriptwriter`: Turns the report into an engaging two-host podcast script
+
+The execution pipeline is defined in `src/podcaster/crew.py` and the task/agent definitions live in:
+
+- `src/podcaster/config/agents.yaml`
+- `src/podcaster/config/tasks.yaml`
+
+The custom tools used by the crew are defined in:
+
+- `src/podcaster/tools/custom_tool.py`
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- Python 3.10 to 3.13
+- `uv` installed
+- Access to the following APIs:
+  - OpenAI API key
+  - Gemini API key
+  - Serper API key
+
+Install `uv` if you do not already have it:
 
 ```bash
 pip install uv
 ```
 
+## Clone the Repository
 
-Next, navigate to your project directory and install the dependencies:
-
-(Optional) Lock the dependencies and install them by using the CLI command:
 ```bash
-crewai install
+git clone https://github.com/MuhammadAwais-32013/podcaster_crew.git
+cd podcaster_crew
 ```
 
-### Setup
+## Step 1: Install Dependencies
 
-1. Create `.env` file at project root and add:
+The repo uses a Python project configuration with `pyproject.toml` and `uv.lock`.
 
+Install the project dependencies:
+
+```bash
+uv sync
 ```
+
+If you want to install the package in editable mode as well:
+
+```bash
+uv pip install -e .
+```
+
+## Step 2: Create Environment Variables
+
+Create a `.env` file in the project root and add your keys:
+
+```env
 MODEL=gpt-4.1-mini-2025-04-14
-OPENAI_API_KEY=sk-
-GEMINI_API_KEY=
-SERPER_API_KEY=
+OPENAI_API_KEY=your_openai_api_key_here
+GEMINI_API_KEY=your_google_gemini_api_key_here
+SERPER_API_KEY=your_serper_api_key_here
 ```
 
-You'll need to add credits for these:
-OpenAI API Key: https://platform.openai.com/api-keys
-Gemini API Key: https://aistudio.google.com/apikey
-Serper API Key: https://serper.dev/
+You may also use `GOOGLE_API_KEY` instead of `GEMINI_API_KEY` if that matches your setup.
 
-
-## Running the Project
-
-To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
+Optional: if you use a shell environment instead of `.env`, you can export them manually:
 
 ```bash
-$ crewai run
+export OPENAI_API_KEY="your_openai_api_key_here"
+export GEMINI_API_KEY="your_google_gemini_api_key_here"
+export SERPER_API_KEY="your_serper_api_key_here"
+export MODEL="gpt-4.1-mini-2025-04-14"
 ```
 
-This command initializes the podcaster Crew, assembling the agents and assigning them tasks as defined in your configuration.
+## Step 3: Understand the Runtime Flow
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+The default workflow defined in `src/podcaster/main.py` uses:
 
-## Customising
-- Modify `src/podcaster/config/agents.yaml` to define your agents
-- Modify `src/podcaster/config/tasks.yaml` to define your tasks
-- Modify `src/podcaster/crew.py` to add your own logic, tools and specific args
-- Modify `src/podcaster/main.py` to add custom inputs for your agents and tasks
+```python
+inputs = {
+    'topic': 'AI LLMs',
+    'current_month': str(datetime.now().month),
+    'current_year': str(datetime.now().year)
+}
+```
+
+This means the project is configured to run a podcast workflow about the topic `AI LLMs` unless you change it.
+
+## Step 4: Run the Project
+
+From the project root, run:
+
+```bash
+uv run podcaster
+```
+
+This entry point calls the `run()` function in `src/podcaster/main.py`.
+
+Alternative command:
+
+```bash
+uv run crewai run
+```
+
+If the package is installed and you have the executable available, you can also run:
+
+```bash
+podcaster
+```
+
+## What Happens During Execution
+
+When the crew runs, it does the following:
+
+1. The `researcher` agent gathers up-to-date information on the chosen topic.
+2. The `reporting_analyst` builds a markdown report from those findings.
+3. The `scriptwriter` creates a natural, two-host podcast script.
+4. The scriptwriter uses the Gemini voice tool to generate a `.wav` audio file.
+5. Output files are saved under the `outputs/` directory.
+
+The files are typically named like:
+
+- `outputs/report-YYYYMMDD-HHMMSS.md`
+- `outputs/script-YYYYMMDD-HHMMSS.md`
+- `outputs/podcast-YYYYMMDD-HHMMSS.wav`
+
+## Project Structure
+
+```text
+podcaster_crew/
+├── README.md
+├── pyproject.toml
+├── uv.lock
+├── src/
+│   └── podcaster/
+│       ├── __init__.py
+│       ├── crew.py
+│       ├── main.py
+│       ├── config/
+│       │   ├── agents.yaml
+│       │   └── tasks.yaml
+│       └── tools/
+│           ├── __init__.py
+│           └── custom_tool.py
+└── outputs/
+```
+
+## Customization
+
+You can adapt the project by editing these files:
+
+- `src/podcaster/config/agents.yaml` — change the agent roles, goals, and backstories
+- `src/podcaster/config/tasks.yaml` — change the instructions and expected output
+- `src/podcaster/crew.py` — customize agents, tools, task output locations, and workflow
+- `src/podcaster/main.py` — change the input topic and runtime behavior
+
+For example, to change the topic from `AI LLMs` to something else:
+
+```python
+inputs = {
+    'topic': 'AI in Healthcare',
+    'current_month': str(datetime.now().month),
+    'current_year': str(datetime.now().year)
+}
+```
+
+## Troubleshooting
+
+### 1. Module not found errors
+
+Run:
+
+```bash
+uv sync
+```
+
+Then try:
+
+```bash
+uv run podcaster
+```
+
+### 2. Missing API keys
+
+Verify that your `.env` file exists in the root folder and contains valid values:
+
+```bash
+cat .env
+```
+
+### 3. Gemini audio generation fails
+
+Check that `GEMINI_API_KEY` or `GOOGLE_API_KEY` is correctly set and that your account has access to the Gemini model used by the script.
+
+### 4. Serper search tool fails
+
+Make sure `SERPER_API_KEY` is valid and has available credits.
+
+### 5. Permission issues or output folder not created
+
+The project creates the `outputs/` folder automatically before kickoff. If needed, make sure you have write permission in the project directory.
+
+## Useful Commands
+
+```bash
+# Sync dependencies
+uv sync
+
+# Run the crew
+uv run podcaster
+
+# Run with crewai CLI
+uv run crewai run
+
+# View installed scripts
+uv run python -m pip list
+```
+
+## License
+
+This project does not currently specify a license in the repository metadata.
 
 ## Support
 
-For support, questions, or feedback regarding the Podcaster Crew or crewAI, visit CrewAI [documentation](https://docs.crewai.com).
+For questions about CrewAI, see:
+
+- https://docs.crewai.com
+
+For project-specific problems, review the config files and ensure your API keys and dependencies are valid before re-running the project.
+
+## Summary
+
+This project is a good example of a multi-agent system that combines research, reporting, and text-to-speech generation in a single workflow. It is particularly useful for generating topic-based podcast content from recent information and turning it into a voice-ready audio experience.
